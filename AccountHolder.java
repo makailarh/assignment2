@@ -2,42 +2,53 @@ package com.meritamerica.assignment2;
 
 public class AccountHolder { 
 	
+	
+	//****INSTANCE VARIABLES ARE IN BLUE****//
+	
+	
 	//Declare variables
 	private String firstName; 
 	private String middleName;
 	private String lastName;
 	private String ssn;
-	private CheckingAccount checkingAccount; 
-	private SavingsAccount savingsAccount;
-	private CDAccount cDOffering;
 	double balance;
-	static int savingsIndex = 0;
-	static int checkingsIndex = 0;
-	static int cDIndex = 0;
-
+	int savingsIndex;
+	int checkingsIndex;
+	int cDIndex;
 	
+	//Declaring a new checking account array
+	private CheckingAccount[] checkings;
+	
+	//Declare a new savings account array
+	private SavingsAccount[] savings;
+	
+	//Declare a new CD Account array
+	private CDAccount[] cDAccounts;
+
 	//Default constructor to initialize Account Holder Info
 	public AccountHolder (String firstName, String middleName, String lastName,  //Default 
-			String ssn, double checkingAccountOpeningBalance, double savingsAccountOpeningBalance) {
-	
-		CheckingAccount checking = new CheckingAccount(checkingAccountOpeningBalance);
+			String ssn) {
 		
-		this.checkingAccount = checking;
 		this.firstName = firstName;
 		this.middleName = middleName;
 		this.lastName = lastName;
 		this.ssn = ssn;
 		
-		SavingsAccount savings = new SavingsAccount(savingsAccountOpeningBalance);
-		this.savingsAccount = savings;
-	
+		this.checkings = new CheckingAccount[10];	
+		this.checkingsIndex = 0;  //number of checking accounts in array
+		
+		this.savings = new SavingsAccount[10];
+		this.savingsIndex = 0; //number of savings accounts in array
+		
+		this.cDAccounts = new CDAccount[10];
+		this.cDIndex = 0; //number of CD accounts in the array
 	
 	}
 	
 	
 	//get first name from User
 	public String getFirstName() {
-		return this.firstName;
+		return firstName;
 	}
 	//set first name
 	public void setFirstName(String name) {
@@ -74,257 +85,249 @@ public class AccountHolder {
 		this.ssn = number; 
 	}
 	
-	//Instantiate new checking account array
-	CheckingAccount[] checkings = new CheckingAccount[checkingsIndex];
 	
-	//add new checking account amount
+	// **** CHECKINGS **** //
+	
+	
+	//construct new checking account
 	CheckingAccount addCheckingAccount (double openingBalance) {
-		//Find out how many account holders there are
-				for (int i=0; i<checkings.length; i++) {
-					if(checkings[i] == null) {
-						checkingsIndex = i;
-						break;
-					}
-				}
-				//Add specified amount of account holders
-				try {
-					checkings[checkingsIndex] = checkingAccount;
-				}
-				catch (ArrayIndexOutOfBoundsException e) {
-				
-			}
-				return checkingAccount;
+		
+		CheckingAccount placeholder = new CheckingAccount(openingBalance);
+		return addCheckingAccount(placeholder);
+		
 	}
-
 			
 	//add new checking account
-	CheckingAccount addCheckingAccount (CheckingAccount checkingAccount) {
+	CheckingAccount addCheckingAccount (CheckingAccount checkingAccount) {		
 	
-		//Find out how many account holders there are
-		for (int i=0; i<checkings.length; i++) {
-			if(checkings[i] == null) {
-				checkingsIndex = i;
-				break;
-			}
+		if (this.getCombinedBalanceWithoutCD() < 250000) {
+		
+		//Is array of checking accounts at capacity?
+		
+				if (this.checkingsIndex +1 > this.checkings.length) {
+					
+					//If array is at capacity, then we need to create a new array with a larger capacity
+					CheckingAccount[] largerChecking = new CheckingAccount[this.checkings.length+10];
+					
+					//Then we have to copy the contents from the existing array
+					for (int i=0; i < this.checkings.length; i++) {
+						largerChecking[i] = this.checkings[i];
+					}
+					
+					//then we have to assign the new larger array to our checking account array instance variable
+					this.checkings = largerChecking;
+					
+				}
+				
+				//and assign it to the next index of the checking account array
+				this.checkings[this.checkingsIndex] = checkingAccount;
+				this.checkingsIndex++;
+			
+						return checkingAccount;
 		}
-		//Add specified amount of account holders
-		checkings[checkingsIndex] = checkingAccount;
-		return checkingAccount;
+		else
+			return null;
 	}
-	
 	
 	//Checking account[] getCheckingAccounts()
 	CheckingAccount[] getCheckingAccounts() {
-		return checkings;
+		return this.checkings;
 	}
 	
 	//Get number of checking accounts
 	int getNumberOfCheckingAccounts() {
-		return checkingsIndex;
+		return this.checkingsIndex;
 	}
 	
-	//Get checking balance
+	//Call upon the get balance method
 	double getCheckingBalance() {
-		int index = 0;
-		for (int i=0; i<checkings.length; i++) {
-			if(checkings[i] == null) {
-				index = i;
-				break;
-			}
-		}
 		
-		int numbOfCheckings = index;
+		int numbOfCheckings = this.checkingsIndex;
 		double total = 0;
 		
 		for (int j = 0; j < numbOfCheckings; j++) {
-			total = total + checkings[j].getBalance();
+			total = total + this.checkings[j].getBalance();
 		}
 		
 		return total;
 	}
 	
-//Instantiate new savings account array
-SavingsAccount[] savingsAccounts = new SavingsAccount[savingsIndex];
 	
-	//add new savings account amount
-		SavingsAccount addSavingsAccount (double openingBalance) {
-			//Find out how many account holders there are
-					for (int i=0; i<savingsAccounts.length; i++) {
-						if(savingsAccounts[i] == null) {
-							savingsIndex = i;
-							break;
-						}
-					}
-					//Add specified amount of account holders
-					try {
-						savingsAccounts[savingsIndex] = savingsAccount;
-					}
-					catch (ArrayIndexOutOfBoundsException e) {
-					
-					}return savingsAccount;
-				}
-		
-				
-		//add new savings account, overloading
-		SavingsAccount addSavingsAccount (SavingsAccount savingsAccount) {
-		
-			//Find out how many account holders there are
-			for (int i=0; i<savingsAccounts.length; i++) {
-				if(savingsAccounts[i] == null) {
-					savingsIndex = i;
-					break;
-				}
-			}
-			//Add specified amount of account holders
-			savingsAccounts[savingsIndex] = savingsAccount;
-			return savingsAccount;
-		}
 
-		
-	//Savings account[] getSavingsAccounts()
-	SavingsAccount[] getSavingsAccount() {
-			return savingsAccounts; 
-	}
+	// **** SAVINGS **** //
+				
+
 	
-	//Get number of savings accounts	
-	int getNumberOfSavingsAccounts() {
-			return savingsIndex;
-	}
-	
-	//Get savings balance
-		double getSavingsBalance() {
-			int index = 0;
-			for (int i=0; i<savingsAccounts.length; i++) {
-				if(savingsAccounts[i] == null) {
-					index = i;
-					break;
-				}
-			}
+	//construct new savings account
+		SavingsAccount addSavingsAccount (double openingBalance) {
 			
-			int numbOfSavings = index;
+			SavingsAccount placeholder = new SavingsAccount(openingBalance);
+			return addSavingsAccount(placeholder);
+			
+		}
+				
+		//add new savings account
+		SavingsAccount addSavingsAccount (SavingsAccount savingsAccount) {		
+		
+			//Check to see if account holder has more than 250000 in combined savings and checking accounts
+			if (this.getCombinedBalanceWithoutCD() < 250000) {
+			
+			//Is array of savings accounts at capacity?
+			
+					if (this.savingsIndex +1 > this.savings.length) {
+						
+						//If array is at capacity, then we need to create a new array with a larger capacity
+						SavingsAccount[] largerSavings = new SavingsAccount[this.savings.length+10];
+						
+						//Then we have to copy the contents from the existing array
+						for (int i=0; i < this.savings.length; i++) {
+							largerSavings[i] = this.savings[i];
+						}
+						
+						//then we have to assign the new larger array to our savings account array instance variable
+						this.savings = largerSavings;
+						
+					}
+					
+					//and assign it to the next index of the savings account array
+					this.savings[this.savingsIndex] = savingsAccount;
+					this.savingsIndex++;
+				
+							return savingsAccount;
+			}
+			else
+				
+				//Do not allow to open new account if they have over $250,000 in combined accounts
+				return null;
+		}
+		
+		//Savings Account[] getSavingsAccounts()
+		SavingsAccount[] getSavingsAccounts() {
+			return this.savings;
+		}
+		
+		//Get number of savings accounts
+		int getNumberOfSavingsAccounts() {
+			return this.savingsIndex;
+		}
+		
+		//Call upon the get balance method
+		double getSavingsBalance() {
+			
+			int numbOfSavings = this.savingsIndex;
 			double total = 0;
 			
 			for (int j = 0; j < numbOfSavings; j++) {
-				total = total + savingsAccounts[j].getBalance();
+				total = total + this.savings[j].getBalance();
 			}
 			
 			return total;
 		}
 		
 		
-		//Instantiate new CDAccount account array
-		CDAccount[] cDAccount = new CDAccount[cDIndex];
-			
-			//add new CDOFfering account amount
-				CDAccount addCDAccount (CDOffering offering, double openingBalance) {
-					//Find out how many account holders there are
-							for (int i=0; i<cDAccount.length; i++) {
-								if(cDAccount[i] == null) {
-									cDIndex = i;
-									break;
-								}
+		// **** CD ACCOUNTS **** //
+		
+		
+		//construct new CD account
+			CDAccount addCDAccount (CDOffering offering, double openingBalance) {
+				
+				CDAccount placeholder = new CDAccount(offering, openingBalance);
+				return addCDAccount(placeholder);
+				
+			}
+					
+			//add new CD account
+			CDAccount addCDAccount (CDAccount cDAccount) {		
+				
+				//Is array of CD accounts at capacity?
+				
+						if (this.cDIndex  > this.cDAccounts.length) {
+							
+							//If array is at capacity, then we need to create a new array with a larger capacity
+							CDAccount[] largerCDAccount = new CDAccount[this.cDAccounts.length+10];
+							
+							//Then we have to copy the contents from the existing array
+							for (int i=0; i < this.cDAccounts.length; i++) {
+								largerCDAccount[i] = this.cDAccounts[i];
 							}
-							//Add specified amount of account holders
-							cDAccount[cDIndex] = cDOffering;
-							return cDOffering;
+							
+							//then we have to assign the new larger array to our CD account array instance variable
+							this.cDAccounts = largerCDAccount;
+							
 						}
-				
 						
-				//add new CD account, overloading
-				CDAccount addCDAccount (CDAccount cdAccount) {
-				
-					//Find out how many account holders there are
-					for (int i=0; i<cDAccount.length; i++) {
-						if(cDAccount[i] == null) {
-							cDIndex = i;
-							break;
-						}
-					}
-					//Add specified amount of account holders
-					cDAccount[cDIndex] = cdAccount;
-					return cdAccount;
+						//and assign it to the next index of the CD account array
+						this.cDAccounts[this.cDIndex] = cDAccount;
+						this.cDIndex++;
+					
+								return cDAccount;
 				}
-
 				
-			//CD account[] getCDAccounts()
+			
+			//CDAccount[] getCDAccounts()
 			CDAccount[] getCDAccounts() {
-					return cDAccount; 
+				return this.cDAccounts;
 			}
 			
-			//Get number of savings accounts	
+			//Get number of CD accounts
 			int getNumberOfCDAccounts() {
-					return cDIndex;
+				return this.cDIndex;
 			}
 			
-			//Get savings balance
-				double getCDBalance() {
-					int index = 0;
-					for (int i=0; i<cDAccount.length; i++) {
-						if(cDAccount[i] == null) {
-							index = i;
-							break;
-						}
-					}
-					
-					int numbOfSavings = index;
-					double total = 0;
-					
-					for (int j = 0; j < numbOfSavings; j++) {
-						total = total + cDAccount[j].getBalance();
-					}
-					
-					return total;
+			//Call upon the get balance method
+			double getCDBalance() {
+				
+				int numbOfCD = this.cDIndex;
+				double total = 0;
+				
+				for (int j = 0; j < numbOfCD; j++) {
+					total = total + this.cDAccounts[j].getBalance();
 				}
 				
+				return total;
+			}
+		
 			
+		// **** COMBINED BALANCES **** //
+		
+		
 	//Get combined balance
 	double getCombinedBalance() {
-		int numbOfSavings = savingsIndex;
-		int numbOfCheckings = checkingsIndex;
-		int numbOfCD = cDIndex;
+		int numbOfSavings = this.savingsIndex;
+		int numbOfCheckings = this.checkingsIndex;
+		int numbOfCD = this.cDIndex;
 		double totalSavings = 0;
 		double totalCheckings = 0;
 		double totalCDOfferings = 0;
 		for (int j = 0; j < numbOfSavings; j++) {
-				totalSavings = totalSavings + savingsAccounts[j].getBalance();
+				totalSavings = totalSavings + this.savings[j].getBalance();
 		}
 		for (int j = 0; j < numbOfCheckings; j++) {
-			totalCheckings = totalCheckings + checkings[j].getBalance();
+			totalCheckings = totalCheckings + this.checkings[j].getBalance();
 	}
 		for (int j = 0; j < numbOfCD; j++) {
-			totalCDOfferings = totalCDOfferings + cDAccount[j].getBalance();
+			totalCDOfferings = totalCDOfferings + this.cDAccounts[j].getBalance();
 	}
 		double combined = totalSavings + totalCheckings + totalCDOfferings;
 		return combined;
 	}
 	
-				
-	//get checking account number
-	public CheckingAccount getCheckingAccountNumber() {
-		return this.checkingAccount;
+	//Get combined balance without CD accounts
+	
+	
+	double getCombinedBalanceWithoutCD() {
+		int numbOfSavings = this.savingsIndex;
+		int numbOfCheckings = this.checkingsIndex;
+		double totalSavings = 0;
+		double totalCheckings = 0;
+		for (int j = 0; j < numbOfSavings; j++) {
+				totalSavings = totalSavings + this.savings[j].getBalance();
+		}
+		for (int j = 0; j < numbOfCheckings; j++) {
+			totalCheckings = totalCheckings + this.checkings[j].getBalance();
 	}
-	
-	//get savings account number
-	public SavingsAccount getSavingsAccountNumber() {
-		return this.savingsAccount;
+		double combined = totalSavings + totalCheckings;
+		return combined;
 	}
-
-	
-	@Override
-	public String toString() {
-		
-		return "Name: " + firstName + " " + middleName + " " + lastName  //Return name
-				+"SSN: " + ssn //Return social
-				+"Checking Account Balance: $" + checkingAccount.getBalance() //Return balance
-				+"Checking Account Interest Rate: $"+checkingAccount.getInterestRate()  //Return checking account interest rate
-				+"Checking Account Balance in 3 years: $"+checkingAccount.futureValue(3) //Return checking value in 3 years
-				+"Savings Account Balance: $"+savingsAccount.getBalance() //Return savings account balance
-				+"Savings Account Interest Rate: $"+savingsAccount.getInterestRate() //Return savings account interest rate
-				+"Savings Account Balance in 3 years: $"+savingsAccount.futureValue(3); //Return savings value in 3 years
-	} 
-		
-	
-	
-
 	 
 }

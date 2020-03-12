@@ -21,6 +21,5 @@ public class CDOffering {
 			return interestRate1;
 	}
 	
-	
 }
 

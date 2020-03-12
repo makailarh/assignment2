@@ -3,35 +3,58 @@ package com.meritamerica.assignment2;
 
 public class MeritBank {
 
-	//Instantiate account holders, start at capacity of 100
-	static AccountHolder[] accountHolders = new AccountHolder[100];
 
-	static int index = 0;
+	static int accountsIndex = 0;
+	static int cDIndex = 0;
 	static int best = 0;
 	static int secondBest = 0;
 	static int accountNumber = 12345;
+	static int accountAmounts = 0;
+	
+	//Declare a new account holder array
+	static private AccountHolder[] accounts;
+	
+
 		
 	//Add account holder method
-	static void addAccountHolder(AccountHolder accountHolder) {
+	static void addAcountHolder (AccountHolder accountHolder) {	
 		
-		//Find out how many account holders there are
-		for (int i=0; i<accountHolders.length; i++) {
-			if(accountHolders[i] == null) {
-				index = i;
-				break;
-			}
-		}
-		//Add specified amount of account holders
-		accountHolders[index] = accountHolder;
-		accountNumber++;
-	}
-		///Instantiate CD offerings, same amount as account holders
-	static CDOffering[] cDOfferings = new CDOffering[index];
+			//Define instance variables
+	accounts = new AccountHolder[5];
 	
-	//Get Account Holder
-	static AccountHolder[] getAccountHolders() {	
-		return accountHolders;
+		//Is array of account holders at capacity?
+		
+		if (accountsIndex +1 > accounts.length) {
+			
+			//If array is at capacity, then we need to create a new array with a larger capacity
+			AccountHolder[] moreAccounts = new AccountHolder[accounts.length+10];
+			
+			//Then we have to copy the contents from the existing array
+			for (int i=0; i < accounts.length; i++) {
+				moreAccounts[i] = accounts[i];
+			}
+			
+			//then we have to assign the new larger array to our account holders array instance variable
+			accounts = moreAccounts;
+			
+		}
+		
+		//and assign it to the next index of the checking account array
+		accounts[accountsIndex] = accountHolder;
+		accountsIndex++;
+		accountNumber++;
+		
 	}
+	
+	//AccountHolder[] getAccountHolders()
+	static AccountHolder[] getAccountHolders() {
+		return accounts;
+	}
+			
+	
+	//Instantiate CD offerings, same amount as account holders
+	static CDOffering[] cDOfferings = new CDOffering[accountsIndex];
+	
 	
 	//Get CDOfferings
 	static CDOffering[] getCDOfferings() {
@@ -41,7 +64,7 @@ public class MeritBank {
 	//Get best CDOffering
 	static CDOffering getBestCDOffering(double depositAmount) {
 		double highestYield =0;
-		double yield =0;
+		double yield = 0;
 		int bestIndex = 0;
 		for (int i=0; i<cDOfferings.length; i++) {  
 			yield = MeritBank.futureValue(depositAmount, cDOfferings[i].getInterestRate(), cDOfferings[i].getTerm());
@@ -57,7 +80,7 @@ public class MeritBank {
 	//Get second best CDOffering
 	static CDOffering getSecondBestCDOffering(double depositAmount) {
 		double highestYield = 0;
-		double yield =0;
+		double yield = 0;
 		int secondBestIndex = 0;
 		for (int i=0; i<cDOfferings.length; i++) {
 			yield = MeritBank.futureValue(depositAmount, cDOfferings[i].getInterestRate(), cDOfferings[i].getTerm());
@@ -75,8 +98,12 @@ public class MeritBank {
 	static void clearCDOfferings() {
 		for (int i = 0; i < cDOfferings.length; i++) {
 			cDOfferings[i]=null;
-			index = 0;
 		}
+	}
+	
+	//set CDOfferings
+	static void setCDOfferings(CDOffering[] offerings) {
+		cDOfferings = offerings;
 	}
 	
 	//Get next account number
@@ -87,7 +114,7 @@ public class MeritBank {
 	//Return the total balances
 	static double totalBalances() {
 	 double sum = 0;
-	 for (AccountHolder holder : accountHolders) {
+	 for (AccountHolder holder : accounts) {
 		 sum += holder.getCheckingBalance();
 		 sum += holder.getSavingsBalance();
 		 sum += holder.getCDBalance();
